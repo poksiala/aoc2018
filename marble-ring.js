@@ -1,39 +1,53 @@
-/* a sort of doubly linked list */
-
-const createMarble = (value, previous, next) => {
+const marble = (value, previous, next) => {
   return {
-    value,
-    previous,
-    next,
-    insert: function(newValue) {
-      if (this.next === null) {
-        const newMarble = createMarble(newValue, this, this)
-        this.previous = newMarble
-        this.next = newMarble
-        return newMarble  
-      } else {
-        const newMarble = createMarble(newValue, this.previous, this)
-        this.previous = newMarble
-        newMarble.previous.next = newMarble
-        return newMarble
-      }
-    },
-    rotate: function(amount) {
-      if (this.next === null) return this
-      if (amount < 0) {
-        return this.previous.rotate(amount + 1)
-      } else if (amount > 0) {
-        return this.next.rotate(amount -1)
-      } else {
-        return this
-      }
-    },
-    removeCurrent: function() {
-      this.previous.next = this.next
-      this.next.previous = this.previous
-      return this.next
-    }
+    value, 
+    previous, 
+    next
   }
 }
 
-module.exports = createMarble
+/* a sort of doubly linked list */
+module.exports = () => {
+  return {
+    current: null,
+    insert: function(value) {
+      if (this.current === null) {
+        this.current = marble(value, null, null)
+      } else if (this.current.next === null) {
+        const tmp = marble(value, this.current, this.current)
+        this.current.next = tmp
+        this.current.previous = tmp
+        this.current = tmp
+      } else {
+        const tmp = marble(value, this.current.previous, this.current)
+        this.current.previous = tmp
+        this.current.previous.next = tmp
+        this.current = tmp
+      }
+      return this
+    },
+    rotate: function(amount) {
+      if (this.current === null 
+          || this.current.next === null 
+          || amount === 0) return this
+      if (amount < 0) {
+        this.current = this.current.previous
+      } else {
+        this.current = this.current.next
+      }
+      return this.rotate((amount < 0) ? amount + 1 : amount - 1)
+    },
+    pop: function() {
+      if (this.current === null) return null
+      const popped = this.current
+      if (this.current.next === null) {
+        this.current = null
+      } else {
+        this.current.next.previous = this.current.previous
+        this.current.previous.next = this.current.next
+        this.current = this.current.next
+      }
+      return popped
+    }
+  }
+}
