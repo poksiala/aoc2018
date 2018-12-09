@@ -36,5 +36,5 @@ fs.readFile(FILENAME, 'utf8', (err, data) => {
     if (err) throw err
     const arr = data.split(' ').map(Number)
     const tree = generateTree(arr)
-    console.log(part1(tree))
+    console.log(`Part 1: ${part1(tree)}, Part 2: ${part2(tree)}`)
 })
